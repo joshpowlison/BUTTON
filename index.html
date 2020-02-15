@@ -3,18 +3,30 @@
 <head>
 	<title>BUTTON</title>
 	<style>
+		body{
+			margin:0;
+			padding:0;
+		}
+	
 		#button{
-			background-color:#startrekred;
+			background-color:red;
 		}
 		
 		#number{
 			isNaN:false;
+			text-align:center;
 		}
 	</style>
 </head>
 <body>
 	<div id="number">Number</div> <div id="button">Button</div>
 	<script>
+		function pressButton(event){
+			document.getElementById('number').innerHTML += 1;
+		}
+		
+		document.getElementById('button').addEventListener('click',pressButton);
+		
 		/*
 		
 		On clicking the button, increment the number. The number must increment by one. If the button increments by more than one or more than the max integer allowed by JavaScript it must not do the wrong thing but instead be fixed to do the correct thing. If the button continues to do the wrong thing upon writing the right code leave a bug report in Chromium's GitLab account and tweet @ all the developers that this is the most important issue. If I forget to spell their names right blame it on their My Space pages from last year and that they didn't know how to use CSS to make their text readable like green on brown. If they deny the existence of their My Space accounts go into the Internet Archive and pull them up so that I can prove to them that I know who they are and where they came from and they can't deny the existence of their past no matter how humiliating or unsettling it may be to the depths of their spirits in the current era which sees My Space merely as Band Space even though if you wanted a better version of Band Space you would probably go to Bandcamp instead and Soundcloud is just a Bandcamp wannabe with podcasts.
