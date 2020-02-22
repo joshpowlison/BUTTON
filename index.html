@@ -18,16 +18,18 @@
 		}
 		
 		#number{
-			isNaN:false;
 			text-align:center;
 		}
 	</style>
 </head>
 <body>
-	<div id="number">Number</div> <div id="button">Button</div>
+	<div id="number">0</div> <div id="button"></div>
 	<script>
+		var number = 0;
+	
 		function pressButton(event){
-			document.getElementById('number').innerHTML += 1;
+			number++;
+			document.getElementById('number').innerHTML = number;
 		}
 		
 		document.getElementById('button').addEventListener('click',pressButton);
