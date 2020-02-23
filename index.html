@@ -8,10 +8,20 @@
 			padding:0;
 			height:100vh;
 			width:100vw;
+			
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			flex-direction:column;
 		}
 		
 		body.pressed{
 			cursor:pointer;
+		}
+		
+		#number{
+			font-size:3em;
+			text-align:center;
 		}
 	
 		#button-holder{
@@ -25,12 +35,11 @@
 			width:12em;
 			height:12em;
 			
-			margin:auto;
 			border-radius:100%;
 		}
 		
 		#button{
-			background:linear-gradient(#f00, #800);
+			background:rgb(255,0,0) linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.4));
 			border-radius:100%;
 			
 			width:90%;
@@ -48,8 +57,51 @@
 			box-shadow:0 0 10em rgba(0,0,0,.5) inset;
 		}
 		
-		#number{
-			text-align:center;
+		#r,#g,#b{
+			-webkit-appearance:none;
+			appearance: none;
+			width:100%;
+			height:25px;
+			background:#d3d3d3;
+			outline:none;
+			opacity:0.7;
+			
+			display:block;
+			margin:auto;
+		}
+		
+		#r{
+			background:#dcc;
+		}
+		
+		#g{
+			background:#cdc;
+		}
+		
+		#b{
+			background:#ccd;
+		}
+		
+		#r::-webkit-slider-thumb
+		,#g::-webkit-slider-thumb
+		,#b::-webkit-slider-thumb{
+			-webkit-appearance:none;
+			appearance:none;
+			width:25px;
+			height:25px;
+			cursor:pointer;
+		}
+		
+		#r::-webkit-slider-thumb{
+			background:#f00;
+		}
+		
+		#g::-webkit-slider-thumb{
+			background:#0f0;
+		}
+		
+		#b::-webkit-slider-thumb{
+			background:#00f;
 		}
 	</style>
 </head>
@@ -59,10 +111,20 @@
 	<div id="button-holder">
 		<div id="button"></div>
 	</div>
+	
+	<div>
+		<input id="r" type="range" min="0" max="255" step="1" value="255">
+		<input id="g" type="range" min="0" max="255" step="1" value="0">
+		<input id="b" type="range" min="0" max="255" step="1" value="0">
+	</div>
 	<script>
 		const BODY			= document.body;
 		const BUTTON		= document.getElementById('button');
 		const NUMBER		= document.getElementById('number');
+		
+		const R				= document.getElementById('r');
+		const G				= document.getElementById('g');
+		const B				= document.getElementById('b');
 		
 		// Bitmasks for all possible presses
 		const MOUSE			= 1 << 0;
@@ -85,12 +147,25 @@
 		var buttonCenterY	= null;
 		var buttonRadius	= null;
 		
+		function setColor(){
+			BUTTON.style.background = 'rgb(' + R.value + ',' + G.value + ',' + B.value + ') linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.4))';
+		}
+		
+		R.addEventListener('input',setColor);
+		G.addEventListener('input',setColor);
+		B.addEventListener('input',setColor);
+		
 		function getCenter(){
+			console.log('resize');
+		
 			var buttonRect	= BUTTON.getBoundingClientRect();
 			buttonRadius	= buttonRect.width / 2;
 			buttonCenterX	= buttonRect.left	+ buttonRadius;
 			buttonCenterY	= buttonRect.top	+ buttonRadius;
 		}
+		
+		// Adjust button data when we change the window's size, etc (so that the center stays correct)
+		window.addEventListener('resize',getCenter);
 		
 		getCenter();
 	
