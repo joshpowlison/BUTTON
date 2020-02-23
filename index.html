@@ -118,6 +118,8 @@
 		<input id="b" type="range" min="0" max="255" step="1" value="0">
 	</div>
 	<script>
+	// Tech to make it harder for hackers to do stuff (this is definitely bullet-proof)
+	(function(){
 		const BODY			= document.body;
 		const BUTTON		= document.getElementById('button');
 		const NUMBER		= document.getElementById('number');
@@ -214,26 +216,7 @@
 			}
 		}
 		
-		function press(event){
-			// Touches (fingers, stylus)
-			if(event.touches){
-				// add the newest touch addition(s); could be more than one
-			}
-			// Regular mouse clicks
-			else {
-				windowPresses |= MOUSE;
-				if(event.target === BUTTON) buttonPresses |= MOUSE;
-			}
-			
-			if(buttonPresses) BUTTON.className	= 'pressed';
-			if(windowPresses) BODY.className	= 'pressed';
-			
-			angle(event);
-		}
-		
 		function move(event){
-			// console.log(event);
-			
 			// If the window is being pressed at all
 			if(windowPresses){
 				// Touches (fingers, stylus)
@@ -251,7 +234,6 @@
 						incrementNumber();
 						buttonPresses &= ~MOUSE;
 					}
-					
 				}
 				
 				if(buttonPresses){
@@ -260,9 +242,24 @@
 				else{
 					BUTTON.className	= '';
 				}
-				
-				if(windowPresses) BODY.className	= 'pressed';
 			}
+			
+			angle(event);
+		}
+		
+		function press(event){
+			// Touches (fingers, stylus)
+			if(event.touches){
+				// add the newest touch addition(s); could be more than one
+			}
+			// Regular mouse clicks
+			else {
+				windowPresses |= MOUSE;
+				if(event.target === BUTTON) buttonPresses |= MOUSE;
+			}
+			
+			if(buttonPresses) BUTTON.className	= 'pressed';
+			if(windowPresses) BODY.className	= 'pressed';
 			
 			angle(event);
 		}
@@ -291,13 +288,14 @@
 			angle(event);
 		}
 		
-		window.addEventListener('mousedown',press);
-		window.addEventListener('mouseup',unpress);
-		window.addEventListener('mousemove',move);
+		window.addEventListener('mousedown'		,press		);
+		window.addEventListener('mouseup'		,unpress	);
+		window.addEventListener('mousemove'		,move		);
 		
-		window.addEventListener('touchstart',unpress);
-		window.addEventListener('touchend',unpress);
-		window.addEventListener('touchmove',unpress);
+		window.addEventListener('touchstart'	,press		);
+		window.addEventListener('touchend'		,unpress	);
+		window.addEventListener('touchmove'		,move		);
+	})();
 	</script>
 </body>
 </html>
