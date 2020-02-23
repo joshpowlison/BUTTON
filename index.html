@@ -14,17 +14,38 @@
 			cursor:pointer;
 		}
 	
+		#button-holder{
+			user-select:none;
+		
+			display:flex;
+			justify-content:center;
+			align-items:center;
+		
+			background:radial-gradient(#700 60%,#000 63%,#bfbfbf 20%);
+			width:12em;
+			height:12em;
+			
+			margin:auto;
+			border-radius:100%;
+		}
+		
 		#button{
-			background-color:red;
+			background:linear-gradient(#f00, #800);
 			border-radius:100%;
 			
-			width:10vw;
-			height:10vw;
+			width:90%;
+			height:90%;
 			margin:auto;
+			
+			transform:rotate3d(0,0,0,0deg) translate(0px,0px) scale(1);
+			
+			transition:transform .02s, box-shadow .02s;
+			
+			box-shadow:0 0 10em rgba(0,0,0,0) inset;
 		}
 		
 		#button.pressed{
-			background-color:#aa0000;
+			box-shadow:0 0 10em rgba(0,0,0,.5) inset;
 		}
 		
 		#number{
@@ -33,7 +54,11 @@
 	</style>
 </head>
 <body>
-	<div id="number">0</div> <div id="button"></div>
+	<div id="number">0</div> 
+	
+	<div id="button-holder">
+		<div id="button"></div>
+	</div>
 	<script>
 		const BODY			= document.body;
 		const BUTTON		= document.getElementById('button');
@@ -55,6 +80,19 @@
 		var number			= 0;
 		var windowPresses	= 0;
 		var buttonPresses	= 0;
+		
+		var buttonCenterX	= null;
+		var buttonCenterY	= null;
+		var buttonRadius	= null;
+		
+		function getCenter(){
+			var buttonRect	= BUTTON.getBoundingClientRect();
+			buttonRadius	= buttonRect.width / 2;
+			buttonCenterX	= buttonRect.left	+ buttonRadius;
+			buttonCenterY	= buttonRect.top	+ buttonRadius;
+		}
+		
+		getCenter();
 	
 		// |= adds to the bitmask
 		// ^= toggles from the bitmask
@@ -64,6 +102,41 @@
 		function incrementNumber(event){
 			number++;
 			NUMBER.innerHTML = number;
+		}
+		
+		// Angle the button
+		function angle(event){
+			// Need to add support for multiple touches tho?
+		
+			// If the button is being targeted at all by the movement, angle it
+			if(event.target === BUTTON){
+				var pressStrength, pressMove;
+				
+				var pressStrength		= buttonRadius / 700;
+				var pressMove			= buttonRadius / 1200;
+				var pressScale			= 1;
+				
+				// If pressing down, restrict further
+				if(buttonPresses){
+					pressStrength	/= 1.75;
+					pressMove		/= 1.75;
+					pressScale		= .95;
+				}
+			
+				// Set button rotation angle
+				// rotate3d(rotate left, rotate up, LEAVE 0, strongest amount)
+				var xAngle = (event.clientX - buttonCenterX) / buttonRadius;
+				var yAngle = (event.clientY - buttonCenterY) / buttonRadius * -1;
+				
+				// Distance
+				var a = event.clientX - buttonCenterX;
+				var b = event.clientY - buttonCenterY;
+				var distance = Math.sqrt(a*a + b*b);
+				
+				BUTTON.style.transform = 'rotate3d(' + yAngle + ',' + xAngle + ',0,' + (distance * pressStrength) + 'deg) translate(' + (a * pressMove) + 'px,' + (b * pressMove) + 'px) scale(' + pressScale + ')';
+			} else {
+				BUTTON.style.transform = 'rotate3d(0,0,0,0deg) translate(0px,0px) scale(1)';
+			}
 		}
 		
 		function press(event){
@@ -79,11 +152,13 @@
 			
 			if(buttonPresses) BUTTON.className	= 'pressed';
 			if(windowPresses) BODY.className	= 'pressed';
+			
+			angle(event);
 		}
 		
 		function move(event){
 			// console.log(event);
-		
+			
 			// If the window is being pressed at all
 			if(windowPresses){
 				// Touches (fingers, stylus)
@@ -101,13 +176,20 @@
 						incrementNumber();
 						buttonPresses &= ~MOUSE;
 					}
+					
 				}
 				
-				if(buttonPresses) BUTTON.className = 'pressed';
-				else BUTTON.className = '';
+				if(buttonPresses){
+					BUTTON.className	= 'pressed';
+				}
+				else{
+					BUTTON.className	= '';
+				}
 				
 				if(windowPresses) BODY.className	= 'pressed';
 			}
+			
+			angle(event);
 		}
 		
 		function unpress(event){
@@ -130,6 +212,8 @@
 			}
 			
 			if(!windowPresses) BODY.className	= '';
+			
+			angle(event);
 		}
 		
 		window.addEventListener('mousedown',press);
