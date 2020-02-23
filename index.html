@@ -6,6 +6,12 @@
 		body{
 			margin:0;
 			padding:0;
+			height:100vh;
+			width:100vw;
+		}
+		
+		body.pressed{
+			cursor:pointer;
 		}
 	
 		#button{
@@ -17,6 +23,10 @@
 			margin:auto;
 		}
 		
+		#button.pressed{
+			background-color:#aa0000;
+		}
+		
 		#number{
 			text-align:center;
 		}
@@ -25,6 +35,7 @@
 <body>
 	<div id="number">0</div> <div id="button"></div>
 	<script>
+		const BODY			= document.body;
 		const BUTTON		= document.getElementById('button');
 		const NUMBER		= document.getElementById('number');
 		
@@ -54,84 +65,80 @@
 			number++;
 			NUMBER.innerHTML = number;
 		}
-		/*
+		
 		function press(event){
 			// Touches (fingers, stylus)
 			if(event.touches){
-				
+				// add the newest touch addition(s); could be more than one
 			}
 			// Regular mouse clicks
 			else {
 				windowPresses |= MOUSE;
+				if(event.target === BUTTON) buttonPresses |= MOUSE;
 			}
+			
+			if(buttonPresses) BUTTON.className	= 'pressed';
+			if(windowPresses) BODY.className	= 'pressed';
 		}
 		
 		function move(event){
+			// console.log(event);
+		
 			// If the window is being pressed at all
-			if(windowPresses === 0){
+			if(windowPresses){
 				// Touches (fingers, stylus)
 				if(event.touches){
-					
+					// update all of the touches (the ids need to stay consistent; we'll have to see how browsers handle that)
 				}
 				// Regular mouse clicks
 				else {
-					
+					// If the button is being moved onto with a pressed button, add it to the tracked presses
+					if(event.target === BUTTON && !buttonPresses){
+						buttonPresses |= MOUSE;
+					}
+					// If the button is being moved off of, track the press
+					else if(event.target !== BUTTON && buttonPresses){
+						incrementNumber();
+						buttonPresses &= ~MOUSE;
+					}
 				}
+				
+				if(buttonPresses) BUTTON.className = 'pressed';
+				else BUTTON.className = '';
+				
+				if(windowPresses) BODY.className	= 'pressed';
 			}
 		}
 		
 		function unpress(event){
+			var pressedStart = buttonPresses;
+			
 			// Touches (fingers, stylus)
 			if(event.touches){
-				
+				// remove the numbered touch(es); update all of the touches (the ids need to stay consistent)
 			}
 			// Regular mouse clicks
 			else {
+				windowPresses &= ~MOUSE;
 				buttonPresses &= ~MOUSE;
 			}
 			
 			// See if nothing is pressing the button anymore
-			if(buttonPresses === 0) incrementNumber();
-		}*/
-		
-		window.addEventListener('mousedown',function(event){
-			// Press on the window
-			windowPresses |= MOUSE;
-			// Press on the button if needbe
-			if(event.target === BUTTON) buttonPresses |= MOUSE;
-			
-			console.log(windowPresses,buttonPresses);
-		});
-		
-		window.addEventListener('mouseup',function(event){
-			// If the mouse is pressing the button, increment the number
-			if(buttonPresses){
+			if(pressedStart && !buttonPresses){
 				incrementNumber();
-			}
-		
-			// Remove all traces of presses
-			windowPresses &= ~MOUSE;
-			buttonPresses &= ~MOUSE;
-			
-			console.log(windowPresses,buttonPresses);
-		});
-		
-		window.addEventListener('mousemove',function(event){
-			// If the window is being pressed on
-			if(windowPresses){
-				// If the button is being moved onto with a pressed button, add it to the tracked presses
-				if(event.target === BUTTON && !buttonPresses){
-					buttonPresses |= MOUSE;
-				}
-				// If the button is being moved off of, track the press
-				else if(event.target !== BUTTON && buttonPresses){
-					incrementNumber();
-					buttonPresses &= ~MOUSE;
-				}
+				BUTTON.className = '';
 			}
 			
-			console.log(windowPresses,buttonPresses);
-		});
+			if(!windowPresses) BODY.className	= '';
+		}
+		
+		window.addEventListener('mousedown',press);
+		window.addEventListener('mouseup',unpress);
+		window.addEventListener('mousemove',move);
+		
+		window.addEventListener('touchstart',unpress);
+		window.addEventListener('touchend',unpress);
+		window.addEventListener('touchmove',unpress);
 	</script>
 </body>
 </html>
