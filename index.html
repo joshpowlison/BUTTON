@@ -158,8 +158,6 @@
 		B.addEventListener('input',setColor);
 		
 		function getCenter(){
-			console.log('resize');
-		
 			var buttonRect	= BUTTON.getBoundingClientRect();
 			buttonRadius	= buttonRect.width / 2;
 			buttonCenterX	= buttonRect.left	+ buttonRadius;
@@ -187,13 +185,11 @@
 		
 			// If the button is being targeted at all by the movement, angle it
 			if(event.target === BUTTON){
-				var pressStrength, pressMove;
-				
 				var pressStrength		= buttonRadius / 700;
 				var pressMove			= buttonRadius / 1200;
 				var pressScale			= 1;
 				
-				// If pressing down, restrict further
+				// If pressing down, restrict further (amounts are arbitrary based on what I think looks good)
 				if(buttonPresses){
 					pressStrength	/= 1.75;
 					pressMove		/= 1.75;
