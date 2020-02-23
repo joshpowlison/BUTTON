@@ -31,11 +31,14 @@
 			justify-content:center;
 			align-items:center;
 		
-			background:radial-gradient(#700 60%,#000 63%,#bfbfbf 20%);
+			/* This holds the outer rim, the dark hole for the button, and the inner circle*/
+			background:radial-gradient(rgba(0,0,0,.65) 60%,rgba(0,0,0,1) 63%,#bfbfbf 20%) rgb(255,0,0);
 			width:12em;
 			height:12em;
 			
 			border-radius:100%;
+			
+			box-shadow:0.1em 0.1em 0.2em 0.03em rgba(0,0,0,.5);
 		}
 		
 		#button{
@@ -50,11 +53,11 @@
 			
 			transition:transform .02s, box-shadow .02s;
 			
-			box-shadow:0 0 10em rgba(0,0,0,0) inset;
+			box-shadow:0 0 10em rgba(0,0,0,0) inset, 0.1em 0.1em 0.2em 0.15em rgba(0,0,0,.5);
 		}
 		
 		#button.pressed{
-			box-shadow:0 0 10em rgba(0,0,0,.5) inset;
+			box-shadow:0 0 10em rgba(0,0,0,.5) inset, 0 0 0 0 rgba(0,0,0,0);
 		}
 		
 		#r,#g,#b{
@@ -122,6 +125,7 @@
 	(function(){
 		const BODY			= document.body;
 		const BUTTON		= document.getElementById('button');
+		const HOLDER		= document.getElementById('button-holder');
 		const NUMBER		= document.getElementById('number');
 		
 		const R				= document.getElementById('r');
@@ -151,6 +155,8 @@
 		
 		function setColor(){
 			BUTTON.style.background = 'rgb(' + R.value + ',' + G.value + ',' + B.value + ') linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.4))';
+			
+			HOLDER.style.background = 'radial-gradient(rgba(0,0,0,.65) 60%,rgba(0,0,0,1) 63%,#bfbfbf 20%) rgb(' + R.value + ',' + G.value + ',' + B.value + ')';
 		}
 		
 		R.addEventListener('input',setColor);
