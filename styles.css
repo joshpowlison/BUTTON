@@ -1,0 +1,123 @@
+body{
+	margin:0;
+	padding:0;
+	height:100vh;
+	width:100vw;
+	
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-direction:column;
+}
+
+body.pressed{
+	cursor:pointer;
+}
+
+#number{
+	position:fixed;
+	top:10vh;
+	
+	font-size:3em;
+	text-align:center;
+}
+
+#button-holder{
+	user-select:none;
+
+	display:flex;
+	justify-content:center;
+	align-items:center;
+
+	/* This holds the outer rim, the dark hole for the button, and the inner circle*/
+	background:radial-gradient(rgba(0,0,0,.65) 60%,rgba(0,0,0,1) 63%,#bfbfbf 20%) rgb(255,0,0);
+	width:12em;
+	height:12em;
+	
+	border-radius:100%;
+	
+	box-shadow:0.1em 0.1em 0.2em 0.03em rgba(0,0,0,.5);
+}
+
+#button{
+	background:rgb(255,0,0) linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.4));
+	border-radius:100%;
+	
+	width:90%;
+	height:90%;
+	margin:auto;
+	
+	transform:rotate3d(0,0,0,0deg) translate(0px,0px) scale(1);
+	
+	transition:transform .02s, box-shadow .02s;
+	
+	box-shadow:0 0 10em rgba(0,0,0,0) inset, 0.1em 0.1em 0.2em 0.15em rgba(0,0,0,.5);
+}
+
+#button.pressed{
+	box-shadow:0 0 10em rgba(0,0,0,.5) inset, 0 0 0 0 rgba(0,0,0,0);
+}
+
+/*********************/
+/******* MENU ********/
+/*********************/
+
+/* Overall positioning */
+#menu{
+	width:100%;
+	max-width:20em;
+	height:20vh;
+	position:fixed;
+	bottom:0;
+	overflow:auto;
+	
+	text-align:center;
+}
+
+/* Color adjustment */
+#r,#g,#b{
+	-webkit-appearance:none;
+	appearance: none;
+	width:100%;
+	height:25px;
+	background:#d3d3d3;
+	outline:none;
+	opacity:0.7;
+	
+	display:block;
+	margin:auto;
+}
+
+#r{
+	background:#dcc;
+}
+
+#g{
+	background:#cdc;
+}
+
+#b{
+	background:#ccd;
+}
+
+#r::-webkit-slider-thumb
+,#g::-webkit-slider-thumb
+,#b::-webkit-slider-thumb{
+	-webkit-appearance:none;
+	appearance:none;
+	width:25px;
+	height:25px;
+	cursor:pointer;
+}
+
+#r::-webkit-slider-thumb{
+	background:#f00;
+}
+
+#g::-webkit-slider-thumb{
+	background:#0f0;
+}
+
+#b::-webkit-slider-thumb{
+	background:#00f;
+}
