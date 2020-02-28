@@ -19,6 +19,13 @@
 	const G					= document.getElementById('g');
 	const B					= document.getElementById('b');
 	
+	const BUTTONDOWN		= document.createElement('audio');
+	BUTTONDOWN.preload		= true;
+	BUTTONDOWN.src			= 'assets/button-down.mp3';
+	const BUTTONUP			= document.createElement('audio');
+	BUTTONUP.preload		= true;
+	BUTTONUP.src			= 'assets/button-up.mp3';
+	
 	const COMMENTARYVOLUME	= document.getElementById('commentary');
 	const COMMENTARYEL		= document.createElement('audio');
 	COMMENTARYEL.autoplay	= true;
@@ -122,7 +129,8 @@
 			if(event.target === BUTTON) buttonPresses |= MOUSE;
 		}
 		
-		if(buttonPresses) BUTTON.className	= 'pressed';
+		// Press the button
+		if(!BUTTON.className && buttonPresses) setButtonDown();
 		if(windowPresses) BODY.className	= 'pressed';
 		
 		angle(event);
@@ -143,10 +151,7 @@
 		}
 		
 		// See if nothing is pressing the button anymore
-		if(pressedStart && !buttonPresses){
-			incrementNumber();
-			BUTTON.className = '';
-		}
+		if(pressedStart && !buttonPresses) setButtonUp();
 		
 		if(!windowPresses) BODY.className	= '';
 		
@@ -157,6 +162,8 @@
 	function move(event){
 		// If the window is being pressed at all
 		if(windowPresses){
+			var buttonPressState = buttonPresses;
+			
 			// Touches (fingers, stylus)
 			if(event.touches){
 				// update all of the touches (the ids need to stay consistent; we'll have to see how browsers handle that)
@@ -169,20 +176,36 @@
 				}
 				// If the button is being moved off of, track the press
 				else if(event.target !== BUTTON && buttonPresses){
-					incrementNumber();
 					buttonPresses &= ~MOUSE;
 				}
 			}
 			
-			if(buttonPresses){
-				BUTTON.className	= 'pressed';
+			if(!buttonPressState && buttonPresses){
+				setButtonDown();
 			}
-			else{
-				BUTTON.className	= '';
+			else if(buttonPressState && !buttonPresses){
+				setButtonUp();
 			}
 		}
 		
 		angle(event);
+	}
+	
+	function setButtonDown(){
+		BUTTON.className		= 'pressed';
+		// Slight change in the playback rate, so the sound feels a little different each time
+		BUTTONDOWN.playbackRate	= 1.4 + (Math.random() * .1)
+		BUTTONDOWN.currentTime	= 0;
+		BUTTONDOWN.play();
+	}
+	
+	function setButtonUp(){
+		incrementNumber();
+		BUTTON.className		= '';
+		// Slight change in the playback rate, so the sound feels a little different each time
+		BUTTONUP.playbackRate	= 1.8 + (Math.random() * .1)
+		BUTTONUP.currentTime	= 0;
+		BUTTONUP.play();
 	}
 	
 	/// SET COLOR ///
