@@ -213,6 +213,38 @@
 		BUTTON.style.background = 'rgb(' + R.value + ',' + G.value + ',' + B.value + ') linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.4))';
 		
 		HOLDER.style.background = 'radial-gradient(rgba(0,0,0,.65) 60%,rgba(0,0,0,1) 63%,#bfbfbf 20%) rgb(' + R.value + ',' + G.value + ',' + B.value + ')';
+		
+		// Change the favicon's color
+		var canvas				= document.createElement('canvas');
+		canvas.width			= 64;
+		canvas.height			= 64;
+		
+		var ctx					= canvas.getContext('2d');
+		
+		// Outer gray
+		ctx.fillStyle			= '#bfbfbf';
+		ctx.beginPath();
+		ctx.arc(32,32,32,0,Math.PI * 2);
+		ctx.fill();
+		
+		// Inner button
+		ctx.fillStyle			= 'rgb(' + R.value + ',' + G.value + ',' + B.value + ')';
+		ctx.beginPath();
+		ctx.arc(32,32,25,0,Math.PI * 2);
+		ctx.fill();
+		
+		var gradient			= ctx.createLinearGradient(32,0,32,64);
+		gradient.addColorStop(0,'rgba(0,0,0,0)');
+		gradient.addColorStop(1,'rgba(0,0,0,.4)');
+		
+		ctx.fillStyle			= gradient;
+		ctx.beginPath();
+		ctx.arc(32,32,25,0,Math.PI * 2);
+		ctx.fill();
+		
+		canvas.toBlob(function(blob){
+			document.getElementById('dynamic-favicon').href = URL.createObjectURL(blob);
+		});
 	}
 	
 	///////////////////////
@@ -243,4 +275,5 @@
 	///////////////////////
 	
 	getCenter();
+	setColor();
 })();
