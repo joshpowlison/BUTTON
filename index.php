@@ -25,6 +25,23 @@
 		
 		<p>Commentary Volume <input id="commentary" type="range" min="0" max="1" step=".1" value="0"></p>
 	</div>
+	<script>
+	// Commentary files
+		const COMMENTARY		= [<?php
+			// Read all of the commentary file names from the folder; add them into here
+			
+			$files = scandir('commentary');
+			
+			for($i = 0, $l = count($files); $i < $l; $i ++){
+				if(intval($files[$i]) === 0) continue;
+				
+				echo intval($files[$i]);
+				
+				// Exit out so we don't echo a comma
+				if(intval($files[$i]) !== 999999999) echo ',';
+			}
+		?>];
+	</script>
 	<script src="script.js"></script>
 </body>
 </html>

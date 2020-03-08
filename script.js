@@ -53,9 +53,6 @@
 	var buttonCenterY		= 0;
 	var buttonRadius		= 0;
 	
-	// Arrays
-	const COMMENTARY		= [1,5];
-	
 	///////////////////////
 	////// FUNCTIONS //////
 	///////////////////////
@@ -77,7 +74,7 @@
 			for(var i = 0, l = COMMENTARY.length; i < l; i ++){
 				if(COMMENTARY[i] === number){
 					// Get the source
-					COMMENTARYEL.src = 'commentary/' + ('00000000' + number).slice(-7) + '.wav';
+					COMMENTARYEL.src = 'commentary/' + ('000000000' + number).slice(-9) + '.mp3';
 					break;
 				}
 			}
