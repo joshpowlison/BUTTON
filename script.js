@@ -33,7 +33,8 @@
 	
 	// Bitmasks for all possible presses
 	const MOUSE				= 1 << 0;
-	const TOUCH0			= 1 << 1;
+	const KEYBOARD			= 1 << 1;
+	// const TOUCH0			= 1 << 1;
 	const TOUCH1			= 1 << 2;
 	const TOUCH2			= 1 << 3;
 	const TOUCH3			= 1 << 4;
@@ -84,7 +85,7 @@
 	// Angle the button
 	function angle(event){
 		// Need to add support for multiple touches tho?
-	
+		
 		// If the button is being targeted at all by the movement, angle it
 		if(event.target === BUTTON){
 			var pressStrength		= buttonRadius / 700;
@@ -120,6 +121,15 @@
 		if(event.touches){
 			// add the newest touch addition(s); could be more than one
 		}
+		// Keyboard
+		else if(event.key){
+			// Check for the key in use
+			if(event.key === 'Enter' && !event.repeat){
+				windowPresses |= KEYBOARD;
+				buttonPresses |= KEYBOARD;
+			// Don't bother doing anything for other key presses
+			} else return;
+		}
 		// Regular mouse clicks
 		else {
 			windowPresses |= MOUSE;
@@ -140,6 +150,14 @@
 		// Touches (fingers, stylus)
 		if(event.touches){
 			// remove the numbered touch(es); update all of the touches (the ids need to stay consistent)
+		}
+		// Keyboard
+		else if(event.key){
+			// Check for the key in use
+			if(event.key === 'Enter' && !event.repeat){
+				windowPresses &= ~KEYBOARD;
+				buttonPresses &= ~KEYBOARD;
+			}
 		}
 		// Regular mouse clicks
 		else {
@@ -183,6 +201,7 @@
 			else if(buttonPressState && !buttonPresses){
 				setButtonUp();
 			}
+			// Nothing is registered for the keyboard
 		}
 		
 		angle(event);
@@ -258,6 +277,9 @@
 	window.addEventListener('touchstart'	,press		);
 	window.addEventListener('touchend'		,unpress	);
 	window.addEventListener('touchmove'		,move		);
+	
+	window.addEventListener('keydown'		,press		);
+	window.addEventListener('keyup'			,unpress	);
 	
 	R.addEventListener('input',setColor);
 	G.addEventListener('input',setColor);
