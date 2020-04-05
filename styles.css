@@ -74,6 +74,15 @@ body.pressed{
 	text-align:center;
 }
 
+#account{
+	margin-bottom:1em;
+}
+
+#username-display{
+	font-weight:bold;
+	margin:0;
+}
+
 /* Color adjustment */
 #r,#g,#b{
 	-webkit-appearance:none;
