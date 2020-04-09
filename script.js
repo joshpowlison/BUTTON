@@ -4,7 +4,7 @@
 // & checks if true
 
 // Tech to make it harder for hackers to do stuff (this is definitely bullet-proof)
-// (function(){
+(function(){
 	///////////////////////
 	////// VARIABLES //////
 	///////////////////////
@@ -22,6 +22,7 @@
 	const BUTTONDOWN		= document.createElement('audio');
 	BUTTONDOWN.preload		= true;
 	BUTTONDOWN.src			= 'assets/button-down.mp3';
+	BUTTONDOWN.volume		= 0.4;
 	const BUTTONUP			= document.createElement('audio');
 	BUTTONUP.preload		= true;
 	BUTTONUP.src			= 'assets/button-up.mp3';
@@ -34,16 +35,19 @@
 	// Bitmasks for all possible presses
 	const MOUSE				= 1 << 0;
 	const KEYBOARD			= 1 << 1;
-	// const TOUCH0			= 1 << 1;
-	const TOUCH1			= 1 << 2;
-	const TOUCH2			= 1 << 3;
-	const TOUCH3			= 1 << 4;
-	const TOUCH4			= 1 << 5;
-	const TOUCH5			= 1 << 6;
-	const TOUCH6			= 1 << 7;
-	const TOUCH7			= 1 << 8;
-	const TOUCH8			= 1 << 9;
-	const TOUCH9			= 1 << 10;
+	const TOUCH				= [
+		1 << 2
+		,1 << 3
+		,1 << 4
+		,1 << 5
+		,1 << 6
+		,1 << 7
+		,1 << 8
+		,1 << 9
+		,1 << 10
+		,1 << 11
+	];
+	const GAMEPAD			= 1 << 12;
 	
 	// Ints
 	var number				= 0;
@@ -73,7 +77,7 @@
 		NUMBER.innerHTML = number;
 		
 		// Play commentary if we're set up to and have one to play
-		if(!EARLYACCESS && COMMENTARYEL.volume){
+		if(COMMENTARYEL.volume){
 			// See if the current position is in the array of positions
 			for(var i = 0, l = COMMENTARY.length; i < l; i ++){
 				if(COMMENTARY[i] === number){
@@ -120,9 +124,22 @@
 	
 	// On clicking/pressing a pointer
 	function press(event){
+		// Don't register this if the menu's open
+		if(document.getElementById('menu').style.display === 'block') return;
+		
 		// Touches (fingers, stylus)
 		if(event.touches){
-			// add the newest touch addition(s); could be more than one
+			// Don't do any of this if the user is pressing the Menu button
+			if(event.changedTouches[0].target === document.getElementById('menu-button')) return;
+			
+			// Add the newest touch additions; could be more than one
+			for(var i = 0; i < event.touches.length; i ++){
+				windowPresses |= TOUCH[i];
+				if(getDistance(event.touches[i].clientX - buttonCenterX, event.touches[i].clientY - buttonCenterY) <= buttonRadius) buttonPresses |= TOUCH[i];
+			}
+			
+			// Touches cause problems
+			event.preventDefault();
 		}
 		// Keyboard
 		else if(event.key){
@@ -132,6 +149,11 @@
 				buttonPresses |= KEYBOARD;
 			// Don't bother doing anything for other key presses
 			} else return;
+		}
+		// Gamepad
+		else if(event.gamepad){
+			windowPresses |= GAMEPAD;
+			buttonPresses |= GAMEPAD;
 		}
 		// Regular mouse clicks
 		else {
@@ -146,13 +168,28 @@
 		angle(event);
 	}
 	
+	function getDistance(a,b){
+		return Math.sqrt(a*a + b*b);
+	}
+	
 	// On unclicking/unpressing a pointer
 	function unpress(event){
+		// Don't register this if the menu's open
+		if(document.getElementById('menu').style.display === 'block') return;
+
 		var pressedStart = buttonPresses;
 		
 		// Touches (fingers, stylus)
-		if(event.touches){
+		if(event.changedTouches){
+			// Don't do any of this if the user is pressing the Menu button
+			if(event.changedTouches[0].target === document.getElementById('menu-button')) return;
+			
 			// remove the numbered touch(es); update all of the touches (the ids need to stay consistent)
+			for(var i = 0; i < event.changedTouches.length; i ++){
+				windowPresses &= ~TOUCH[i];
+				// See if the touch is on the button
+				if(getDistance(event.changedTouches[i].clientX - buttonCenterX, event.changedTouches[i].clientY - buttonCenterY) <= buttonRadius) buttonPresses &= ~TOUCH[i];
+			}
 		}
 		// Keyboard
 		else if(event.key){
@@ -161,6 +198,11 @@
 				windowPresses &= ~KEYBOARD;
 				buttonPresses &= ~KEYBOARD;
 			}
+		}
+		// Gamepad
+		else if(event.gamepad){
+			windowPresses &= ~GAMEPAD;
+			buttonPresses &= ~GAMEPAD;
 		}
 		// Regular mouse clicks
 		else {
@@ -178,22 +220,40 @@
 	
 	// On moving a pointer
 	function move(event){
+		// Don't register this if the menu's open
+		if(document.getElementById('menu').style.display === 'block') return;
+		
 		// If the window is being pressed at all
 		if(windowPresses){
 			var buttonPressState = buttonPresses;
 			
 			// Touches (fingers, stylus)
 			if(event.touches){
+				// Don't do any of this if the user is pressing the Menu button
+				if(event.changedTouches[0].target === document.getElementById('menu-button')) return;
+				
 				// update all of the touches (the ids need to stay consistent; we'll have to see how browsers handle that)
+				for(var i = 0; i < event.touches.length; i ++){
+					// If the button is being moved onto, add it to tracked presses
+					if(getDistance(event.touches[i].clientX - buttonCenterX, event.touches[i].clientY - buttonCenterY) <= buttonRadius){
+						buttonPresses |= TOUCH[i];
+					// Otherwise, remove it from tracked presses
+					}else{
+						buttonPresses &= ~TOUCH[i];
+					}
+				}
+				
+				// Touches cause problems
+				event.preventDefault();
 			}
 			// Regular mouse clicks
 			else {
 				// If the button is being moved onto with a pressed button, add it to the tracked presses
-				if(event.target === BUTTON && !buttonPresses){
+				if(event.target === BUTTON){
 					buttonPresses |= MOUSE;
 				}
 				// If the button is being moved off of, track the press
-				else if(event.target !== BUTTON && buttonPresses){
+				else if(event.target !== BUTTON){
 					buttonPresses &= ~MOUSE;
 				}
 			}
@@ -226,6 +286,23 @@
 		BUTTONUP.currentTime	= 0;
 		BUTTONUP.play();
 	}
+	
+	// Check for gamepad input
+	var gamepadInput = false;
+	setInterval(function(){
+		// Get the first gamepad, if gamepads are connected
+		var gamepads = navigator.getGamepads();
+		if(gamepads[0]){
+			// Only reads button 0, which should be the primary one on most controllers
+			if(gamepadInput === false && gamepads[0].buttons[0].pressed){
+				gamepadInput = true;
+				press({gamepad:true});
+			} else if(gamepadInput === true && !gamepads[0].buttons[0].pressed){
+				gamepadInput = false;
+				unpress({gamepad:true});
+			}
+		}
+	},16);
 	
 	/// SET COLOR ///
 	function setColor(passedColor = null){
@@ -276,8 +353,6 @@
 	
 	// Load an account and its data
 	function accountCall(type){
-		if(EARLYACCESS) return;
-		
 		// Don't bother updating the number if it hasn't been changed
 		if(
 			type === 'setNumber'
@@ -298,8 +373,6 @@
 				+ '&number=' + number
 				+ '&color=' + encodeURIComponent(R.value + ',' + G.value + ',' + B.value)
 		}).then(response => response.text()).then(text => {
-			console.log(text);
-			
 			var response = JSON.parse(text);
 			
 			// If we got a message, something went wrong
@@ -368,80 +441,6 @@
 		accountCall('setNumber');
 	},30000);
 	
-	if(EARLYACCESS) document.getElementById('commentary').parentElement.remove();
-	
-	// Test if the user's a backer; if not, block 'em
-	function isABacker(){
-		const CHECKS = [
-			'Are you a backer?'
-			,'I don\'t understand, are you a backer?'
-			,'Please make sense, are you a backer?'
-			,'Goshdangit, just answer yes or no!'
-			,'What the actual heck are you a freakin backer dude'
-		];
-		
-		// Run through these checks
-		for(var i = 0; i < 5; i ++){
-			var response = prompt(CHECKS[i]);
-			
-			console.log(response);
-			
-			// If negative
-			if(/^(?:no|nah|nah\s*fam|nope)$/i.test(response)){
-				alert('Sorry, this EARLY ACCESS/demo/alpha/incomplete protoype is for backers only.');
-				return false;
-			}
-			// If affirmative
-			else if(/^(?:yes|yeah|y)$/i.test(response)){
-				return true;
-			}
-			// If snarky
-			else if(/^who\s*wants\s*to\s*know\?*$/i.test(response)){
-				alert('I want to know.');
-			}
-			// If Batman
-			else if(/^(no*)?\s*i'?m\s*batman[!\.]*$/i.test(response)){
-				alert('Oh my gosh, I\'m so sorry! Mr. Batman, please enjoy BUTTON.');
-				return true;
-			}
-			// If negative in Japanese
-			else if(/いいえ/.test(response)){
-				alert('ばか!');
-				return false;
-			}
-			// If positive in Japanese
-			else if(/はい/.test(response)){
-				alert('ありがとうございました!');
-				return true;
-			}
-		}
-	
-		alert('I give up... just become a backer...');
-		return false;
-	}
-	
-	if(EARLYACCESS){
-		if(!isABacker()) location.href = 'kickstarter.html';
-	}
-	
-	///////////////////////
-	/// EVENT LISTENERS ///
-	///////////////////////
-	
-	// Adjust button data when we change the window's size, etc (so that the center stays correct)
-	window.addEventListener('resize',getCenter);
-	
-	window.addEventListener('mousedown'		,press		);
-	window.addEventListener('mouseup'		,unpress	);
-	window.addEventListener('mousemove'		,move		);
-	
-	window.addEventListener('touchstart'	,press		);
-	window.addEventListener('touchend'		,unpress	);
-	window.addEventListener('touchmove'		,move		);
-	
-	window.addEventListener('keydown'		,press		);
-	window.addEventListener('keyup'			,unpress	);
-	
 	// Account data
 	document.addEventListener('beforeunload',function(){
 		accountCall('setNumber');
@@ -463,6 +462,32 @@
 		accountCall('logout');
 	});
 	
+	document.getElementById('menu-button').addEventListener('click',function(){
+		document.getElementById('menu').style.display = (document.getElementById('menu').style.display === 'block') ? 'none' : 'block';
+	});
+	
+	document.getElementById('menu-close-button').addEventListener('click',function(){
+		document.getElementById('menu').style.display = 'none';
+	});
+	
+	///////////////////////
+	/// EVENT LISTENERS ///
+	///////////////////////
+	
+	// Adjust button data when we change the window's size, etc (so that the center stays correct)
+	window.addEventListener('resize',getCenter);
+	
+	window.addEventListener('mousedown'		,press		);
+	window.addEventListener('mouseup'		,unpress	);
+	window.addEventListener('mousemove'		,move		);
+	
+	window.addEventListener('touchstart'	,press		,{passive:false});
+	window.addEventListener('touchend'		,unpress	,{passive:false});
+	window.addEventListener('touchmove'		,move		,{passive:false});
+	
+	window.addEventListener('keydown'		,press		);
+	window.addEventListener('keyup'			,unpress	);
+	
 	// Colors
 	R.addEventListener('input',function(){setColor();});
 	G.addEventListener('input',function(){setColor();});
@@ -479,4 +504,4 @@
 	getCenter();
 	setColor();
 	accountCall('getNumber');
-// })();
+})();

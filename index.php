@@ -18,30 +18,40 @@
 		<div id="button"></div>
 	</div>
 	
-	<div id="menu">
-		<div id="account">
-			<div id="if-logged-out">
-				<input id="username" type="text" maxlength="13" placeholder="Username">
-				<input id="password" type="password" placeholder="Password">
-				<br>
-				<button id="login">Login</button><button id="signup">Sign up</button>
+	<button id="menu-button">Menu</button>
+	
+	<div id="menu-container">
+		<div id="menu" style="display:none;">
+			<div id="account">
+				<div id="if-logged-out">
+					<input id="username" type="text" maxlength="13" placeholder="Username">
+					<input id="password" type="password" placeholder="Password">
+					<br>
+					<button id="login">Login</button><button id="signup">Sign up</button>
+				</div>
+				<div id="if-logged-in">
+					<p id="username-display"></p>
+					<button id="logout">Log out</button>
+				</div>
 			</div>
-			<div id="if-logged-in">
-				<p id="username-display"></p>
-				<button id="logout">Log out</button>
-			</div>
+			
+			<input id="r" type="range" min="0" max="255" step="1" value="255">
+			<input id="g" type="range" min="0" max="255" step="1" value="0">
+			<input id="b" type="range" min="0" max="255" step="1" value="0">
+			
+			<p>Commentary Volume <input id="commentary" type="range" min="0" max="1" step=".1" value="0"></p>
+			
+			<p>Creator: Josh Powlison</p>
+			<p>Co-Producers: [2], PM, RS, [9], KO, cA, DH</p>
+			
+			<p><a target="_blank" href="https://www.kickstarter.com/projects/joshuapowlison/button-a-game-about-pressing-issues">Funded with Kickstarter</a></p>
+			
+			<p><em>V 0.9.1 or something</em></p>
+			<button id="menu-close-button">Close Menu</button>
 		</div>
-		
-		<input id="r" type="range" min="0" max="255" step="1" value="255">
-		<input id="g" type="range" min="0" max="255" step="1" value="0">
-		<input id="b" type="range" min="0" max="255" step="1" value="0">
-		
-		<p>Commentary Volume <input id="commentary" type="range" min="0" max="1" step=".1" value="0"></p>
 	</div>
 	
 	<script>
-	const EARLYACCESS			= false;
-	
 	// Commentary files
 		const COMMENTARY		= [<?php
 			// Read all of the commentary file names from the folder; add them into here
