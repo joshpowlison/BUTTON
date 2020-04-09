@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>BUTTON</title>
-	<link rel="stylesheet" type="text/css" href="styles.css">
+	<link rel="stylesheet" type="text/css" href="styles.css?t=<?php echo filemtime('styles.css'); ?>">
 	
 	<meta name="description" content="Press a button. Increment a number. Change reality."><!-- 155-160 char max -->
 	<meta charset="utf-8">
@@ -42,7 +42,7 @@
 			<p>Commentary Volume <input id="commentary" type="range" min="0" max="1" step=".1" value="0"></p>
 			
 			<p>Creator: Josh Powlison</p>
-			<p>Co-Producers: [2], PM, RS, [9], KO, cA, DH</p>
+			<p>Co-Producers:<!-- [2],--> PM, RS,<!-- [9],--> KO, cA, DH</p>
 			
 			<p><a target="_blank" href="https://www.kickstarter.com/projects/joshuapowlison/button-a-game-about-pressing-issues">Funded with Kickstarter</a></p>
 			
@@ -68,6 +68,6 @@
 			}
 		?>];
 	</script>
-	<script src="script.js"></script>
+	<script src="script.js?t=<?php echo filemtime('script.js'); ?>"></script>
 </body>
 </html>

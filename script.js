@@ -89,12 +89,62 @@
 		}
 	}
 	
+	// Yes, I did shamelessly take code from StackOverflow, don't @ me I'm bad at maths: https://stackoverflow.com/a/9939071/5006449
+	function getPolygonCentroid(pts) {
+		var first = pts[0], last = pts[pts.length-1];
+		if (first[0] != last[0] || first[1] != last[1]) pts.push(first);
+		var twicearea=0,
+			x=0, y=0,
+			nPts = pts.length,
+			p1, p2, f;
+		for ( var i=0, j=nPts-1 ; i<nPts ; j=i++ ) {
+			p1 = pts[i]; p2 = pts[j];
+			f = p1[0]*p2[1] - p2[0]*p1[1];
+			twicearea += f;          
+			x += ( p1[0] + p2[0] ) * f;
+			y += ( p1[1] + p2[1] ) * f;
+		}
+		f = twicearea * 3;
+		return [x/f, y/f];
+	}
+	
+	function getMidpoint(pts){
+		return [
+			// X
+			(pts[0][0] + pts[1][0])/2
+			// Y
+			,(pts[0][1] + pts[1][1])/2
+		];
+	}
+
+	
 	// Angle the button
 	function angle(event){
+		// Get the position of pressing
+		var pressPosition = null;
+		
 		// Need to add support for multiple touches tho?
+		if(event.touches){
+			var touchPoints = [];
+			
+			// Get all the touches on the button and add them to the list
+			for(var i = 0; i < event.touches.length; i ++){
+				// Add the touch to the touchPoints list if it's on the button
+				if(getDistance(event.touches[i].clientX - buttonCenterX, event.touches[i].clientY - buttonCenterY) <= buttonRadius) touchPoints.push([event.touches[i].clientX,event.touches[i].clientY]);
+			}
+			
+			// Get the centroid of the polygon- which, um, may be glitchy, but we'll see!
+			if(touchPoints.length == 1)			pressPosition = touchPoints[0];
+			else if(touchPoints.length == 2)	pressPosition = getMidpoint(touchPoints);
+			else if(touchPoints.length > 2)		pressPosition = getPolygonCentroid(touchPoints);
+		}
+		// If it's clicking
+		else if(event.target === BUTTON){
+			pressPosition = [event.clientX, event.clientY];
+		}
 		
 		// If the button is being targeted at all by the movement, angle it
-		if(event.target === BUTTON){
+		if(pressPosition){
 			var pressStrength		= buttonRadius / 700;
 			var pressMove			= buttonRadius / 1200;
 			var pressScale			= 1;
@@ -108,12 +158,12 @@
 		
 			// Set button rotation angle
 			// rotate3d(rotate left, rotate up, LEAVE 0, strongest amount)
-			var xAngle = (event.clientX - buttonCenterX) / buttonRadius;
-			var yAngle = (event.clientY - buttonCenterY) / buttonRadius * -1;
+			var xAngle = (pressPosition[0] - buttonCenterX) / buttonRadius;
+			var yAngle = (pressPosition[1] - buttonCenterY) / buttonRadius * -1;
 			
 			// Distance
-			var a = event.clientX - buttonCenterX;
-			var b = event.clientY - buttonCenterY;
+			var a = pressPosition[0] - buttonCenterX;
+			var b = pressPosition[1] - buttonCenterY;
 			var distance = Math.sqrt(a*a + b*b);
 			
 			BUTTON.style.transform = 'rotate3d(' + yAngle + ',' + xAngle + ',0,' + (distance * pressStrength) + 'deg) translate(' + (a * pressMove) + 'px,' + (b * pressMove) + 'px) scale(' + pressScale + ')';
@@ -182,13 +232,25 @@
 		// Touches (fingers, stylus)
 		if(event.changedTouches){
 			// Don't do any of this if the user is pressing the Menu button
-			if(event.changedTouches[0].target === document.getElementById('menu-button')) return;
+			if(event.touches.length <= 1 && event.changedTouches[0].target === document.getElementById('menu-button')) return;
 			
-			// remove the numbered touch(es); update all of the touches (the ids need to stay consistent)
-			for(var i = 0; i < event.changedTouches.length; i ++){
+			// Get rid of all touch data
+			for(var i = 0; i < TOUCH.length; i ++){
 				windowPresses &= ~TOUCH[i];
-				// See if the touch is on the button
-				if(getDistance(event.changedTouches[i].clientX - buttonCenterX, event.changedTouches[i].clientY - buttonCenterY) <= buttonRadius) buttonPresses &= ~TOUCH[i];
+				buttonPresses &= ~TOUCH[i];
+			}
+			
+			// Get all of the touches' data again
+			for(var i = 0; i < event.touches.length; i ++){
+				windowPresses |= TOUCH[i];
+				
+				// If the button is being moved onto, add it to tracked presses
+				if(getDistance(event.touches[i].clientX - buttonCenterX, event.touches[i].clientY - buttonCenterY) <= buttonRadius){
+					buttonPresses |= TOUCH[i];
+				// Otherwise, remove it from tracked presses
+				}else{
+					buttonPresses &= ~TOUCH[i];
+				}
 			}
 		}
 		// Keyboard
