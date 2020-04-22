@@ -46,7 +46,7 @@
 			
 			<p><a target="_blank" href="https://www.kickstarter.com/projects/joshuapowlison/button-a-game-about-pressing-issues">Funded with Kickstarter</a></p>
 			
-			<p><em>V 0.9.1 or something</em></p>
+			<p><em>V 1.0.0 i guess</em></p>
 			<button id="menu-close-button">Close Menu</button>
 		</div>
 	</div>
