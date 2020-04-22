@@ -42,7 +42,7 @@
 			<p>Commentary Volume <input id="commentary" type="range" min="0" max="1" step=".1" value="0"></p>
 			
 			<p>Creator: Josh Powlison</p>
-			<p>Co-Producers:<!-- [2],--> PM, RS,<!-- [9],--> KO, cA, DH</p>
+			<p>Co-Producers: MB, PM, RS, JL, KO, cA, DH</p>
 			
 			<p><a target="_blank" href="https://www.kickstarter.com/projects/joshuapowlison/button-a-game-about-pressing-issues">Funded with Kickstarter</a></p>
 			
