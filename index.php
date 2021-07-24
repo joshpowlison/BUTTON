@@ -44,7 +44,7 @@
 			<p>Creator: Josh Powlison</p>
 			<p>Co-Producers: MB, PM, RS, JL, KO, cA, DH</p>
 			
-			<p><a target="_blank" href="https://www.kickstarter.com/projects/joshuapowlison/button-a-game-about-pressing-issues">Funded with Kickstarter</a></p>
+			<p><a target="_blank" href="https://www.kickstarter.com/projects/joshuapowlison/button-a-game-about-pressing-issues">Funded with Kickstarter</a><br><a target="_blank" href="https://analog.joshpowlison.com/">Play the Sequel, ANALOG</a></p>
 			
 			<p><em>V 1.0.0 i guess</em></p>
 			<button id="menu-close-button">Close Menu</button>
